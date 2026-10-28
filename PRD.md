@@ -111,6 +111,34 @@
 `a` 키는 `IDLE` 상태에서만 자동 무적 런 시작 입력으로 처리한다. 자동 무적 런 중
 `a` 키를 다시 눌러도 지속 시간이 연장되거나 상태가 중첩되지 않아야 한다.
 
+### 3.4 상태 다이어그램
+
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
+
+    IDLE --> RUN: 좌우 방향키 입력
+    RUN --> IDLE: 방향키 해제
+
+    IDLE --> SLEEP: IDLE 5초 경과
+    SLEEP --> IDLE: Space 키 입력
+    SLEEP --> RUN: 좌우 방향키 입력
+
+    IDLE --> AUTO_INVINCIBLE_RUN: a 키 입력
+    AUTO_INVINCIBLE_RUN --> AUTO_INVINCIBLE_RUN: 벽 충돌 / 위치 보정 및 방향 반전
+    AUTO_INVINCIBLE_RUN --> IDLE: 5초 이상 경과 / 자동 이동·무적·확대 종료
+    AUTO_INVINCIBLE_RUN --> RUN: 좌우 방향키 입력 / 자동 런 취소 및 입력 방향 이동
+
+    state AUTO_INVINCIBLE_RUN {
+        [*] --> 자동이동
+        자동이동 --> 자동이동: 빠른 속도로 현재 방향 이동
+        자동이동 --> [*]: 상태 종료
+    }
+```
+
+자동 무적 런 중에는 방향키 입력을 시간 만료보다 우선 처리한다. 따라서 동일한
+프레임에 5초 경과와 방향키 입력이 함께 발생하면 `RUN`으로 전환한다.
+
 ## 4. 애니메이션 및 리소스 요구사항
 
 - 자동 무적 런은 기존 `animation_sheet.png`에서 제공되는 캐릭터 애니메이션을
