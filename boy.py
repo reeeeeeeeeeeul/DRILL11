@@ -18,7 +18,7 @@ class Boy:
     MIN_X = 50
     MAX_X = 750
     RUN_SPEED = 5
-    AUTO_RUN_SPEED = 10
+    AUTO_RUN_SPEED = 12
     AUTO_RUN_DURATION = 5
     AUTO_RUN_SCALE = 1.5
 
