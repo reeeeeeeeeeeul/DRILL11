@@ -1,4 +1,5 @@
 import math
+from pathlib import Path
 
 from pico2d import (
     SDL_KEYDOWN,
@@ -31,7 +32,7 @@ class Boy:
         self.auto_run_last_updated_at = get_time()
         self.is_invincible = False
         self.scale = 1
-        self.image = load_image('animation_sheet.png')
+        self.image = load_image(str(Path(__file__).with_name('animation_sheet.png')))
         self.machine = Machine(
             model=self,
             states=['IDLE', 'RUN', 'SLEEP', 'AUTO_INVINCIBLE_RUN'],
