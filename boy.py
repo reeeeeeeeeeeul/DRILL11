@@ -54,6 +54,12 @@ class Boy:
             'IDLE',
             after='end_auto_run',
         )
+        self.machine.add_transition(
+            'cancel_auto_run',
+            'AUTO_INVINCIBLE_RUN',
+            'RUN',
+            after='cancel_auto_run_state',
+        )
 
     def update(self):
         if self.state == 'IDLE':
@@ -91,7 +97,9 @@ class Boy:
             elif event.key in (SDLK_LEFT, SDLK_RIGHT):
                 self.pressed_directions.add(event.key)
                 self.face_dir = 1 if event.key == SDLK_RIGHT else -1
-                if self.state in ('IDLE', 'SLEEP'):
+                if self.state == 'AUTO_INVINCIBLE_RUN':
+                    self.cancel_auto_run()
+                elif self.state in ('IDLE', 'SLEEP'):
                     self.run()
         elif event.type == SDL_KEYUP and event.key in (SDLK_LEFT, SDLK_RIGHT):
             self.pressed_directions.discard(event.key)
@@ -113,6 +121,12 @@ class Boy:
         self.is_invincible = False
         self.scale = 1
         self.reset_idle_timer()
+
+    def cancel_auto_run_state(self):
+        self.auto_run_elapsed = 0
+        self.auto_run_last_updated_at = get_time()
+        self.is_invincible = False
+        self.scale = 1
 
     def draw(self):
         if self.state == 'IDLE' and self.face_dir == 1:
