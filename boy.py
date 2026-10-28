@@ -28,6 +28,7 @@ class Boy:
         self.pressed_directions = set()
         self.idle_started_at = get_time()
         self.auto_run_elapsed = 0
+        self.auto_run_last_updated_at = get_time()
         self.is_invincible = False
         self.scale = 1
         self.image = load_image('animation_sheet.png')
@@ -47,6 +48,12 @@ class Boy:
             'AUTO_INVINCIBLE_RUN',
             after='start_auto_run',
         )
+        self.machine.add_transition(
+            'auto_run_timeout',
+            'AUTO_INVINCIBLE_RUN',
+            'IDLE',
+            after='end_auto_run',
+        )
 
     def update(self):
         if self.state == 'IDLE':
@@ -60,6 +67,12 @@ class Boy:
                 min(self.MAX_X, self.x + self.face_dir * self.RUN_SPEED),
             )
         elif self.state == 'AUTO_INVINCIBLE_RUN':
+            now = get_time()
+            self.auto_run_elapsed += now - self.auto_run_last_updated_at
+            self.auto_run_last_updated_at = now
+            if self.auto_run_elapsed >= self.AUTO_RUN_DURATION:
+                self.auto_run_timeout()
+                return
             self.frame = (self.frame + 1) % 8
             self.x += self.face_dir * self.AUTO_RUN_SPEED
             if self.x >= self.MAX_X:
@@ -90,8 +103,16 @@ class Boy:
 
     def start_auto_run(self):
         self.auto_run_elapsed = 0
+        self.auto_run_last_updated_at = get_time()
         self.is_invincible = True
         self.scale = self.AUTO_RUN_SCALE
+
+    def end_auto_run(self):
+        self.auto_run_elapsed = 0
+        self.auto_run_last_updated_at = get_time()
+        self.is_invincible = False
+        self.scale = 1
+        self.reset_idle_timer()
 
     def draw(self):
         if self.state == 'IDLE' and self.face_dir == 1:
