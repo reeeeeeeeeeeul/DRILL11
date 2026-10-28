@@ -15,6 +15,10 @@ from transitions import Machine
 class Boy:
     MIN_X = 50
     MAX_X = 750
+    RUN_SPEED = 5
+    AUTO_RUN_SPEED = 10
+    AUTO_RUN_DURATION = 5
+    AUTO_RUN_SCALE = 1.5
 
     def __init__(self):
         self.x, self.y = 400, 90
@@ -22,10 +26,13 @@ class Boy:
         self.face_dir = 1
         self.pressed_directions = set()
         self.idle_started_at = get_time()
+        self.auto_run_elapsed = 0
+        self.is_invincible = False
+        self.scale = 1
         self.image = load_image('animation_sheet.png')
         self.machine = Machine(
             model=self,
-            states=['IDLE', 'RUN', 'SLEEP'],
+            states=['IDLE', 'RUN', 'SLEEP', 'AUTO_INVINCIBLE_RUN'],
             initial='IDLE',
             auto_transitions=False,
         )
