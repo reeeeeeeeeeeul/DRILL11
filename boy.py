@@ -62,6 +62,12 @@ class Boy:
         elif self.state == 'AUTO_INVINCIBLE_RUN':
             self.frame = (self.frame + 1) % 8
             self.x += self.face_dir * self.AUTO_RUN_SPEED
+            if self.x >= self.MAX_X:
+                self.x = self.MAX_X
+                self.face_dir = -1
+            elif self.x <= self.MIN_X:
+                self.x = self.MIN_X
+                self.face_dir = 1
 
     def handle_event(self, event):
         if event.type == SDL_KEYDOWN:
